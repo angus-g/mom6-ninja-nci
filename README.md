@@ -5,8 +5,9 @@ Painless shell scripts to set up a ninja build of MOM6 on Raijin with Intel comp
 1. Clone this repository (preferably on /short, as the directories will fill up with object files and executables)
 2. Clone https://github.com/NOAA-GFDL/MOM6-examples to your home directory, then run `git submodule update --init --recursive` to fetch the rest of the components
 3. (Optional) In `MOM6-examples/src/MOM6` and `MOM6-examples/src/FMS`, run `git checkout dev/gfdl` and `git checkout xanadu`, respectively to track the latest versions
-4. Back in the clone of this repository, run `./gen_build.sh` to generate the overall config file for compiler flags (you may edit the `config.ninja` file afterwards to change these)
-5. Make sure you have the [ninja](https://github.com/ninja-build/ninja/releases) executable somewhere in your `PATH`
+4. Back in the clone of this repository, edit `./gen_build.sh` to point the `srcdir` variable to the `src` directory of MOM6-examples (e.g. `$HOME/MOM6-examples/src`)
+5. Run `./gen_build.sh` to generate the overall config file for compiler flags (you may edit the `config.ninja` file afterwards to change these)
+6. Make sure you have the [ninja](https://github.com/ninja-build/ninja/releases) executable somewhere in your `PATH`
 
 ## Building FMS
 The `shared` subdirectory is to build the FMS library against which MOM6 is linked.
