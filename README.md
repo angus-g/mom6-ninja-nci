@@ -1,5 +1,5 @@
 # mom6-ninja-raijin
-Painless shell scripts to set up a ninja build of MOM6 on Raijin with Intel compilers. As prerequisites, I recommend you have the latest `intel-fc` module loaded, and a modern version of OpenMPI (3.1.3 or 4.0.0 as of now).
+Painless shell scripts to set up a ninja build of MOM6 on Raijin with Intel compilers. As prerequisites, I recommend you have the latest `intel-fc` module loaded, and a modern version of OpenMPI (3.1.3 or 4.0.0 as of now). Make sure your `intel-cc` module version matches whatever you have chosen for `intel-fc`, or you'll get linking errors like `undefined reference to 'for_realloc_lhs'`.
 
 ## Setup
 1. Clone this repository (preferably on /short, as the directories will fill up with object files and executables)
