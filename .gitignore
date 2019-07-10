@@ -1,3 +1,13 @@
+# ninja files (to be generated)
 config.ninja
 build.ninja
 
+# build artifacts
+*.o
+*.mod
+*.ninja_deps
+*.ninja_log
+
+# binaries
+shared/libfms.a
+ocean_only_symmetric/MOM6
