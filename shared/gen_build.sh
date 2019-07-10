@@ -2,9 +2,6 @@
 
 . ../gen_build.sh
 
-# recursively expand globs
-shopt -s globstar
-
 cat << 'EOF' > build.ninja
 include ../config.ninja
 
@@ -13,8 +10,8 @@ fflags = $fflags_opt
 EOF
 
 # lists of source files
-fsrc_files=(${srcdir}/FMS/**/*.[fF]90)
-csrc_files=(${srcdir}/FMS/**/*.c)
+fsrc_files=($(find -L ${srcdir}/FMS -iname '*.f90'))
+csrc_files=($(find -L ${srcdir}/FMS -name '*.c'))
 objs=()
 
 # c file rules

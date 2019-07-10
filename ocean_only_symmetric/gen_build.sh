@@ -3,9 +3,6 @@
 # source config variables
 . ../gen_build.sh
 
-# recursively expand globs
-shopt -s globstar
-
 cat << 'EOF' > build.ninja
 include ../config.ninja
 
@@ -15,18 +12,9 @@ fflags = $fflags_opt
 EOF
 
 # lists of source files
-fsrc_files=(${srcdir}/MOM6/src/**/*.[fF]90)
-fsrc_files+=(${srcdir}/MOM6/config_src/solo_driver/*.[fF]90)
-#csrc_files=(${srcdir}/MOM6/src/**/*.c)
+fsrc_files=($(find -L ${srcdir}/MOM6/src -iname '*.f90'))
+fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/solo_driver -iname '*.f90'))
 objs=()
-
-# c file rules
-#for file in "${csrc_files[@]}"; do
-#    obj="$(basename "${file%.*}").o"
-#    objs+=("$obj")
-#    gen_nfile "$file"
-#    printf 'build %s: cc %s\n' "$obj" "$nfile" >> build.ninja
-#done
 
 # build module provides for fortran files
 declare -A modules products
