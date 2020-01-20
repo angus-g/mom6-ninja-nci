@@ -1,8 +1,8 @@
-# mom6-ninja-raijin
-Painless shell scripts to set up a ninja build of MOM6 on Raijin with Intel compilers. As prerequisites, I recommend you have the latest `intel-fc` module loaded, and a modern version of OpenMPI (3.1.3 or 4.0.0 as of now). Make sure your `intel-cc` module version matches whatever you have chosen for `intel-fc`, or you'll get linking errors like `undefined reference to 'for_realloc_lhs'`.
+# mom6-ninja-nci
+Painless shell scripts to set up a ninja build of MOM6 on NCI with Intel compilers. As prerequisites, I recommend you have the latest `intel-compiler` module loaded, `netcdf`, and a modern version of OpenMPI (4.0.x).
 
 ## Setup
-1. Clone this repository (preferably on /short, as the directories will fill up with object files and executables)
+1. Clone this repository (preferably on /scratch, as the directories will fill up with object files and executables)
 2. Clone https://github.com/NOAA-GFDL/MOM6-examples to your home directory, then run `git submodule update --init --recursive` to fetch the rest of the components
 3. (Optional) In `MOM6-examples/src/MOM6` and `MOM6-examples/src/FMS`, run `git checkout dev/gfdl` and `git checkout xanadu`, respectively to track the latest versions
 4. Back in the clone of this repository, edit `./gen_build.sh` to point the `srcdir` variable to the `src` directory of MOM6-examples (e.g. `$HOME/MOM6-examples/src`)
