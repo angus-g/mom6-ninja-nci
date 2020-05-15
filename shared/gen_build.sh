@@ -5,12 +5,12 @@
 cat << 'EOF' > build.ninja
 include ../config.ninja
 
-incflags = -I${srcdir}/FMS/include -I${srcdir}/FMS/mosaic -I${srcdir}/FMS/drifters -I${srcdir}/FMS/fms -I${srcdir}/FMS/mpp/include
+incflags = -I${srcdir}/FMS/include -I${srcdir}/FMS/mosaic -I${srcdir}/FMS/drifters -I${srcdir}/FMS/fms -I${srcdir}/FMS/fms2_io/include -I${srcdir}/FMS/mpp/include
 fflags = $fflags_opt
 EOF
 
 # lists of source files
-fsrc_files=($(find -L ${srcdir}/FMS -iname '*.f90'))
+fsrc_files=($(find -L ${srcdir}/FMS -path ${srcdir}/FMS/test_fms -prune -o -iname '*.f90' -print))
 csrc_files=($(find -L ${srcdir}/FMS -name '*.c'))
 objs=()
 
