@@ -13,7 +13,7 @@ EOF
 
 # lists of source files
 fsrc_files=($(find -L ${srcdir}/MOM6/src -iname '*.f90'))
-fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/solo_driver -iname '*.f90'))
+fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/{external,solo_driver} -iname '*.f90'))
 objs=()
 
 # build module provides for fortran files
