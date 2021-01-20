@@ -7,7 +7,7 @@ cat << 'EOF' > build.ninja
 include ../config.ninja
 
 incflags = $incflags -I../shared -I${srcdir}/MOM6/config_src/dynamic_symmetric -I${srcdir}/MOM6/src/framework -I${srcdir}/FMS/include
-ldflags = -lnetcdff -L../shared -lfms
+ldflags = -lnetcdff -lnetcdf -L../shared -lfms
 fflags = $fflags_opt
 EOF
 
