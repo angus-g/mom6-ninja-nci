@@ -5,6 +5,9 @@
 cat << 'EOF' > build.ninja
 include ../config.ninja
 
+rule manifest
+     command = python3 ../fms_manifest.py $in $out
+
 incflags = -I${srcdir}/FMS/include -I${srcdir}/FMS/mosaic -I${srcdir}/FMS/drifters -I${srcdir}/FMS/fms -I${srcdir}/FMS/fms2_io/include -I${srcdir}/FMS/mpp/include
 fflags = $fflags_opt
 EOF
@@ -63,3 +66,4 @@ done
 printf 'build libfms.a: archive ' >> build.ninja
 printf '%s ' "${objs[@]}" >> build.ninja
 printf '\n' >> build.ninja
+printf 'build manifest.yaml: manifest libfms.a\n' >> build.ninja
