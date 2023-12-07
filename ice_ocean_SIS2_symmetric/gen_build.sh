@@ -19,7 +19,7 @@ fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/drivers/FMS_cap -iname '*.f90')
 fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/external -iname '*.f90'))
 fsrc_files+=($(find -L ${srcdir}/SIS2 -iname '*.f90'))
 # coupler files
-fsrc_files+=($(find -L ${srcdir}/{atmos_null,coupler,land_null,ice_param,icebergs} -iname '*.f90'))
+fsrc_files+=($(find -L ${srcdir}/{atmos_null,coupler,land_null,ice_param,icebergs/src} -iname '*.f90'))
 fsrc_files+=($(find -L ${srcdir}/FMS/coupler -iname '*.f90'))
 objs=()
 
