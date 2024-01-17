@@ -2,11 +2,17 @@
 
 . ../gen_build.sh
 
-cat << 'EOF' > build.ninja
+# find include directories
+inc_dirs=($(find -L ${srcdir}/FMS -type d -name 'include') ${srcdir}/FMS/constants ${srcdir}/FMS/constants4 ${srcdir}/FMS/fms)
+inc_flags="$(printf -- "-I%s " "${inc_dirs[@]}")"
+cpp_defs="-Duse_deprecated_io"
+
+cat << EOF > build.ninja
 include ../config.ninja
 
-incflags = -I${srcdir}/FMS/include -I${srcdir}/FMS/mosaic -I${srcdir}/FMS/drifters -I${srcdir}/FMS/fms -I${srcdir}/FMS/fms2_io/include -I${srcdir}/FMS/mpp/include
-fflags = $fflags_opt
+incflags = ${inc_flags}
+fflags = \$fflags_opt
+cppdefs = ${cpp_defs}
 EOF
 
 # lists of source files
@@ -25,7 +31,7 @@ done
 # build module provides for fortran files
 declare -A modules products
 for file in "${fsrc_files[@]}"; do
-    provided=$(sed -rn '/\bprocedure\b/I! s/^\s*module\s+(\w+).*/\1/ip' "$file" | tr '[:upper:]' '[:lower:]')
+    provided=$(gfortran ${cpp_defs} ${inc_flags} -E "$file" 2>/dev/null | sed -rn '/\bprocedure\b/I! s/^\s*module\s+(\w+).*/\1/ip' | tr '[:upper:]' '[:lower:]')
     gen_nfile "$file"
     for m in $provided; do
 	modules[$m]="$nfile"
@@ -35,7 +41,7 @@ done
 
 # fortran file rules
 for file in "${fsrc_files[@]}"; do
-    deps=$(sed -rn 's/^\s*use\s+(\w+).*/\1/ip' "$file" | uniq | tr '[:upper:]' '[:lower:]')
+    deps=$(gfortran ${cpp_defs} ${inc_flags} -E "$file" 2>/dev/null | sed -rn 's/^\s*use\s+(\w+).*/\1/ip' | sort -u | tr '[:upper:]' '[:lower:]')
     mods=()
     srcs=()
     gen_nfile "$file"

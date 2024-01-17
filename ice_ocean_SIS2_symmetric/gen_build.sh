@@ -6,20 +6,20 @@
 cat << 'EOF' > build.ninja
 include ../config.ninja
 
-incflags = $incflags -I../shared -I${srcdir}/MOM6/config_src/memory/dynamic_symmetric -I${srcdir}/MOM6/src/framework -I${srcdir}/FMS/include -I${srcdir}/SIS2/src -I${srcdir}/SIS2/config_src/dynamic_symmetric
+incflags = $incflags -I../shared -I${srcdir}/MOM6/config_src/memory/dynamic_symmetric -I${srcdir}/MOM6/src/framework -I${srcdir}/FMS/include -I${srcdir}/FMS/coupler/include -I${srcdir}/SIS2/src -I${srcdir}/SIS2/config_src/dynamic_symmetric
 ldflags = -lnetcdff -lnetcdf -L../shared -lfms
 fflags = $fflags_opt
-cppdefs = $cppdefs -Duse_AM3_physics -D_USE_LEGACY_LAND_
+cppdefs = $cppdefs -Duse_AM3_physics -D_USE_LEGACY_LAND_ -Duse_deprecated_io
 EOF
 
 # lists of source files
 fsrc_files=($(find -L ${srcdir}/MOM6/src -iname '*.f90'))
-fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/infra/FMS1 -iname '*.f90'))
-fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/drivers/FMS_cap -iname '*.f90'))
+fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/infra/FMS2 -iname '*.f90'))
 fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/external -iname '*.f90'))
+fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/drivers/FMS_cap -iname '*.f90'))
 fsrc_files+=($(find -L ${srcdir}/SIS2 -iname '*.f90'))
 # coupler files
-fsrc_files+=($(find -L ${srcdir}/{atmos_null,coupler,land_null,ice_param,icebergs} -iname '*.f90'))
+fsrc_files+=($(find -L ${srcdir}/{atmos_null,coupler/full,coupler/shared,land_null,ice_param,icebergs/src} -iname '*.f90'))
 fsrc_files+=($(find -L ${srcdir}/FMS/coupler -iname '*.f90'))
 objs=()
 
