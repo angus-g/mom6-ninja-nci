@@ -6,6 +6,9 @@
 cat << 'EOF' > build.ninja
 include ../config.ninja
 
+rule manifest
+     command = python3 ../mom_manifest.py --srcdir="${srcdir}" --fflags="${fflags}" --cflags="${cflags}" $in $out
+
 incflags = $incflags -I../shared -I${srcdir}/MOM6/config_src/memory/dynamic_symmetric -I${srcdir}/MOM6/src/framework
 ldflags = -lnetcdff -lnetcdf -L../shared -lfms
 fflags = $fflags_opt
@@ -59,3 +62,4 @@ done
 printf 'build MOM6: link ' >> build.ninja
 printf '%s ' "${objs[@]}" >> build.ninja
 printf '\n' >> build.ninja
+printf 'build manifest.yaml: manifest MOM6\n' >> build.ninja

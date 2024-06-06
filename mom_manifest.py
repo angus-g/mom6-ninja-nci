@@ -35,7 +35,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 component_revs = []
-for component in ["MOM6", "SIS2", "FMS"]:
+for component in ["MOM6", "SIS2", "FMS", "atmos_null", "coupler", "ice_param", "icebergs", "land_null"]:
     with pushd(str(args.srcdir / component)):
         res = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True)
         component_revs.append({"component": component, "ref": res.stdout.strip()})
