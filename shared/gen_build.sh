@@ -2,14 +2,18 @@
 
 . ../gen_build.sh
 
-cat << 'EOF' > build.ninja
+# find include directories
+inc_dirs=($(find -L ${srcdir}/FMS -type d -name 'include') "${srcdir}/FMS/constants" "${srcdir}/FMS/constants4" "${srcdir}/FMS/fms")
+fdefs="-Duse_deprecated_io"
+
+cat << EOF > build.ninja
 include ../config.ninja
 
 rule manifest
      command = python3 ../fms_manifest.py \$in \$out
 
-incflags = -I${srcdir}/FMS/include -I${srcdir}/FMS/mosaic -I${srcdir}/FMS/drifters -I${srcdir}/FMS/fms -I${srcdir}/FMS/fms2_io/include -I${srcdir}/FMS/mpp/include
-fflags = $fflags_opt
+incflags = $(printf -- "-I%s " "${inc_dirs[@]}")
+fflags = \$fflags_opt $fdefs
 EOF
 
 # lists of source files
@@ -38,7 +42,7 @@ done
 
 # fortran file rules
 for file in "${fsrc_files[@]}"; do
-    deps=$(sed -rn 's/^\s*use\s+(\w+).*/\1/ip' "$file" | uniq | tr '[:upper:]' '[:lower:]')
+    deps=$(gfortran -E $(printf -- "-I%s " "${inc_dirs[@]}") $fdefs "$file" 2>/dev/null | sed -rn 's/^\s*use\s+(\w+).*/\1/ip' | uniq | tr '[:upper:]' '[:lower:]')
     mods=()
     srcs=()
     gen_nfile "$file"
