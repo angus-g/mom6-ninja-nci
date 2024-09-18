@@ -31,7 +31,7 @@ done
 # build module provides for fortran files
 declare -A modules products
 for file in "${fsrc_files[@]}"; do
-    provided=$(gfortran ${cpp_defs} ${inc_flags} -E "$file" 2>/dev/null | sed -rn '/\bprocedure\b/I! s/^\s*module\s+(\w+).*/\1/ip' | tr '[:upper:]' '[:lower:]')
+    provided=$(gfortran ${cpp_defs} ${inc_flags} -cpp -E "$file" 2>/dev/null | sed -rn '/\bprocedure\b/I! s/^\s*module\s+(\w+).*/\1/ip' | tr '[:upper:]' '[:lower:]')
     gen_nfile "$file"
     for m in $provided; do
 	modules[$m]="$nfile"
@@ -41,7 +41,7 @@ done
 
 # fortran file rules
 for file in "${fsrc_files[@]}"; do
-    deps=$(gfortran ${cpp_defs} ${inc_flags} -E "$file" 2>/dev/null | sed -rn 's/^\s*use\s+(\w+).*/\1/ip' | sort -u | tr '[:upper:]' '[:lower:]')
+    deps=$(gfortran ${cpp_defs} ${inc_flags} -cpp -E "$file" 2>/dev/null | sed -rn 's/^\s*use\s+(\w+).*/\1/ip' | sort -u | tr '[:upper:]' '[:lower:]')
     mods=()
     srcs=()
     gen_nfile "$file"
