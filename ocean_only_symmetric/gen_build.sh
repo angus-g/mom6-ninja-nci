@@ -7,10 +7,10 @@ cat << 'EOF' > build.ninja
 include ../config.ninja
 
 rule manifest
-     command = python3 ../mom_manifest.py --srcdir="${srcdir}" --fflags="${fflags}" --cflags="${cflags}" $in $out
+     command = ../mom_manifest.py --srcdir="${srcdir}" --fflags="${fflags}" --cflags="${cflags}" $in $out
 
 incflags = $incflags -I../shared -I${srcdir}/MOM6/config_src/memory/dynamic_symmetric -I${srcdir}/MOM6/src/framework
-ldflags = -lnetcdff -lnetcdf -L../shared -lfms
+ldflags = $ldflags -lnetcdff -lnetcdf -L../shared -lfms
 fflags = $fflags_opt
 EOF
 
@@ -18,7 +18,7 @@ EOF
 fsrc_files=($(find -L ${srcdir}/MOM6/src -iname '*.f90'))
 fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/external -iname '*.f90'))
 fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/drivers/solo_driver -iname '*.f90'))
-fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/infra/FMS1 -iname '*.f90'))
+fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/infra/FMS2 -iname '*.f90'))
 objs=()
 
 # build module provides for fortran files

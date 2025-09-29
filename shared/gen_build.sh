@@ -3,17 +3,19 @@
 . ../gen_build.sh
 
 # find include directories
-inc_dirs=($(find -L ${srcdir}/FMS -type d -name 'include') "${srcdir}/FMS/constants" "${srcdir}/FMS/constants4" "${srcdir}/FMS/fms")
-fdefs="-Duse_deprecated_io"
+inc_dirs=($(find -L ${srcdir}/FMS -type d -name 'include') "${srcdir}/FMS/constants" "${srcdir}/FMS/constants4" "${srcdir}/FMS/fms" "${srcdir}/FMS/grid_utils")
+inc_flags="$(printf -- "-I%s " "${inc_dirs[@]}")"
+cpp_defs="-Duse_libMPI -Duse_deprecated_io -Duse_netCDF"
 
 cat << EOF > build.ninja
 include ../config.ninja
 
 rule manifest
-     command = python3 ../fms_manifest.py \$in \$out
+     command = ../fms_manifest.py \$in -o \$out
 
-incflags = $(printf -- "-I%s " "${inc_dirs[@]}")
-fflags = \$fflags_opt $fdefs
+incflags = ${inc_flags}
+fflags = \$fflags_opt
+cppdefs = ${cpp_defs}
 EOF
 
 # lists of source files
@@ -32,7 +34,7 @@ done
 # build module provides for fortran files
 declare -A modules products
 for file in "${fsrc_files[@]}"; do
-    provided=$(sed -rn '/\bprocedure\b/I! s/^\s*module\s+(\w+).*/\1/ip' "$file" | tr '[:upper:]' '[:lower:]')
+    provided=$(gfortran ${cpp_defs} ${inc_flags} -cpp -E "$file" 2>/dev/null | sed -rn '/\bprocedure\b/I! s/^\s*module\s+(\w+).*/\1/ip' | tr '[:upper:]' '[:lower:]')
     gen_nfile "$file"
     for m in $provided; do
 	modules[$m]="$nfile"
@@ -42,7 +44,7 @@ done
 
 # fortran file rules
 for file in "${fsrc_files[@]}"; do
-    deps=$(gfortran -E $(printf -- "-I%s " "${inc_dirs[@]}") $fdefs "$file" 2>/dev/null | sed -rn 's/^\s*use\s+(\w+).*/\1/ip' | uniq | tr '[:upper:]' '[:lower:]')
+    deps=$(gfortran ${cpp_defs} ${inc_flags} -cpp -E "$file" 2>/dev/null | sed -rn 's/^\s*use\s+(\w+).*/\1/ip' | sort -u | tr '[:upper:]' '[:lower:]')
     mods=()
     srcs=()
     gen_nfile "$file"
