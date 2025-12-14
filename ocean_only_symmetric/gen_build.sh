@@ -3,22 +3,19 @@
 # source config variables
 . ../gen_build.sh
 
-cat << 'EOF' > build.ninja
+cat << EOF > build.ninja
 include ../config.ninja
 
-rule manifest
-     command = ../mom_manifest.py --srcdir="${srcdir}" --fflags="${fflags}" --cflags="${cflags}" $in $out
-
-incflags = $incflags -I../shared -I${srcdir}/MOM6/config_src/memory/dynamic_symmetric -I${srcdir}/MOM6/src/framework
-ldflags = $ldflags -lnetcdff -lnetcdf -L../shared -lfms
-fflags = $fflags_opt
+incflags = -I../shared -I${srcdir}/mom6/config_src/memory/dynamic_symmetric -I${srcdir}/mom6/src/framework $(nf-config --fflags)
+ldflags = -lnetcdff -lnetcdf -L../shared -lfms
+fflags = \$fflags_dbg
 EOF
 
 # lists of source files
-fsrc_files=($(find -L ${srcdir}/MOM6/src -iname '*.f90'))
-fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/external -iname '*.f90'))
-fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/drivers/solo_driver -iname '*.f90'))
-fsrc_files+=($(find -L ${srcdir}/MOM6/config_src/infra/FMS2 -iname '*.f90'))
+fsrc_files=($(find -L ${srcdir}/mom6/src -iname '*.f90'))
+fsrc_files+=($(find -L ${srcdir}/mom6/config_src/external -iname '*.f90'))
+fsrc_files+=($(find -L ${srcdir}/mom6/config_src/drivers/solo_driver -iname '*.f90'))
+fsrc_files+=($(find -L ${srcdir}/mom6/config_src/infra/FMS2 -iname '*.f90'))
 objs=()
 
 # build module provides for fortran files
@@ -62,4 +59,3 @@ done
 printf 'build MOM6: link ' >> build.ninja
 printf '%s ' "${objs[@]}" >> build.ninja
 printf '\n' >> build.ninja
-printf 'build manifest.yaml: manifest MOM6\n' >> build.ninja

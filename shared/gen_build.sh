@@ -3,24 +3,19 @@
 . ../gen_build.sh
 
 # find include directories
-inc_dirs=($(find -L ${srcdir}/FMS -type d -name 'include') "${srcdir}/FMS/constants" "${srcdir}/FMS/constants4" "${srcdir}/FMS/fms" "${srcdir}/FMS/grid_utils")
-inc_flags="$(printf -- "-I%s " "${inc_dirs[@]}")"
-cpp_defs="-Duse_libMPI -Duse_deprecated_io -Duse_netCDF"
+inc_dirs=($(find -L ${srcdir}/fms -type d -name 'include') "${srcdir}/fms/constants" "${srcdir}/fms/constants4" "${srcdir}/fms/fms" "${srcdir}/fms/grid_utils")
+fdefs="-Duse_deprecated_io -Duse_libMPI -Duse_netCDF"
 
 cat << EOF > build.ninja
 include ../config.ninja
 
-rule manifest
-     command = ../fms_manifest.py \$in -o \$out
-
-incflags = ${inc_flags}
-fflags = \$fflags_opt
-cppdefs = ${cpp_defs}
+incflags = $(printf -- "-I%s " "${inc_dirs[@]}") $(nf-config --fflags)
+fflags = \$fflags_dbg $fdefs
 EOF
 
 # lists of source files
-fsrc_files=($(find -L ${srcdir}/FMS -path ${srcdir}/FMS/test_fms -prune -o -iname '*.f90' -print))
-csrc_files=($(find -L ${srcdir}/FMS -name '*.c'))
+fsrc_files=($(find -L ${srcdir}/fms -path ${srcdir}/fms/test_fms -prune -o -iname '*.f90' -print))
+csrc_files=($(find -L ${srcdir}/fms -name '*.c'))
 objs=()
 
 # c file rules
@@ -34,7 +29,7 @@ done
 # build module provides for fortran files
 declare -A modules products
 for file in "${fsrc_files[@]}"; do
-    provided=$(gfortran ${cpp_defs} ${inc_flags} -cpp -E "$file" 2>/dev/null | sed -rn '/\bprocedure\b/I! s/^\s*module\s+(\w+).*/\1/ip' | tr '[:upper:]' '[:lower:]')
+    provided=$(sed -rn '/\bprocedure\b/I! s/^\s*module\s+(\w+).*/\1/ip' "$file" | tr '[:upper:]' '[:lower:]')
     gen_nfile "$file"
     for m in $provided; do
 	modules[$m]="$nfile"
@@ -44,7 +39,7 @@ done
 
 # fortran file rules
 for file in "${fsrc_files[@]}"; do
-    deps=$(gfortran ${cpp_defs} ${inc_flags} -cpp -E "$file" 2>/dev/null | sed -rn 's/^\s*use\s+(\w+).*/\1/ip' | sort -u | tr '[:upper:]' '[:lower:]')
+    deps=$(gfortran -E $(printf -- "-I%s " "${inc_dirs[@]}") $fdefs "$file" 2>/dev/null | sed -rn 's/^\s*use\s+(\w+).*/\1/ip' | uniq | tr '[:upper:]' '[:lower:]')
     mods=()
     srcs=()
     gen_nfile "$file"
@@ -72,4 +67,3 @@ done
 printf 'build libfms.a: archive ' >> build.ninja
 printf '%s ' "${objs[@]}" >> build.ninja
 printf '\n' >> build.ninja
-printf 'build manifest.yaml: manifest libfms.a\n' >> build.ninja

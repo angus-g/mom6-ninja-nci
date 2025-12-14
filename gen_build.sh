@@ -20,14 +20,15 @@ EOF
     cat << 'EOF' >> config.ninja
 fc = mpif90
 cc = mpicc
-ld = mpif90
+ld = mpifort
 ar = ar
 
-fflags = -fno-alias -auto -safe-cray-ptr -ftz -assume byterecl -i4 -r8 -nowarn -g
-fflags_opt = $fflags -O2 -fp-model precise -xHost -traceback
-fflags_dbg = $fflags -O0 -check -check noarg_temp_created -check nopointer -warn -warn noerrors -traceback -assume nobuffered_io
-cflags = -g -O2
+fflags = -g -fcray-pointer -fdefault-real-8 -fdefault-double-8
+fflags_opt = $fflags -O2
+fflags_dbg = $fflags -O0
+cflags = -D__IFC -g
 
+cppdefs = -Duse_libMPI -Duse_netCDF -DSPMD -DHAVE_GETTID
 arflags = rv
 
 rule fc
